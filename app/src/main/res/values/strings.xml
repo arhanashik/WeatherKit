@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">demo</string>
+
+    <string name="file_provider_authority" translatable="false">com.workfort.demo.fileprovider</string>
+</resources>
