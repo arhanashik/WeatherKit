@@ -46,6 +46,9 @@ dependencies {
     // implementation "androidx.cardview:cardview:$rootProject.support"
     // implementation "androidx.recyclerview:recyclerview:$rootProject.support"
 
+    // work manager
+    // implementation "android.arch.work:work-runtime:$rootProject.workmanager"
+
     // reading and writing Exif tags in a JPEG file or a RAW image file
     // implementation "androidx.exifinterface:exifinterface:$rootProject.exifinterface"
 
