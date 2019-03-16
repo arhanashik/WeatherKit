@@ -2,4 +2,15 @@
     <string name="app_name">WeatherKit</string>
 
     <string name="file_provider_authority" translatable="false">com.workfort.weatherkit.fileprovider</string>
+    <string name="label_city">City</string>
+    <string name="label_temp">00</string>
+    <string name="label_degree">o</string>
+    <string name="label_weather">Weather</string>
+    <string name="label_wind_speed">Wind Speed</string>
+    <string name="label_humidity">Humidity</string>
+    <string name="label_day_1">Monday</string>
+    <string name="label_day_1_temp">5\" 1\"</string>
+    <string name="ic_weather">Ic Weather</string>
+    <string name="label_day_2">Tuesday</string>
+    <string name="label_day_3">Wednesday</string>
 </resources>

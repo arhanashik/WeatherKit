@@ -28,7 +28,9 @@
                     android:resource="@xml/file_provider_paths" />
         </provider>
 
-        <activity android:name=".app.ui.main.MainActivity">
+        <activity
+                android:name=".app.ui.main.MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -7,15 +7,228 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/img_bg"
             tools:context=".app.ui.main.MainActivity">
 
         <TextView
+            android:id="@+id/tv_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_space"
+            android:text="@string/label_city"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_18"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/space_10"
+            android:paddingBottom="@dimen/space_10"
+            android:text="@string/label_temp"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_100"
+            android:gravity="end"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_city"
+            app:layout_constraintEnd_toStartOf="@+id/tv_degree"/>
+
+        <TextView
+            android:id="@+id/tv_degree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_30"
+            android:paddingTop="@dimen/space_10"
+            android:text="@string/label_degree"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_28"
+            android:textAllCaps="true"
+            app:layout_constraintStart_toEndOf="@+id/tv_temperature"
+            app:layout_constraintTop_toTopOf="@+id/tv_temperature"
+            app:layout_constraintEnd_toStartOf="@+id/tv_weather"/>
+
+        <TextView
+            android:id="@+id/tv_weather"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_30"
+            android:paddingTop="@dimen/space_10"
+            android:text="@string/label_weather"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_14"
+            android:drawableStart="@drawable/ic_partly_cloudy"
+            android:drawablePadding="@dimen/space_10"
+            app:layout_constraintStart_toEndOf="@+id/tv_degree"
+            app:layout_constraintTop_toTopOf="@+id/tv_degree"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tv_air_speed"/>
+
+        <TextView
+            android:id="@+id/tv_air_speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_wind_speed"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_14"
+            android:drawableStart="@drawable/ic_wind_speed"
+            android:drawablePadding="@dimen/space_10"
+            app:layout_constraintStart_toStartOf="@+id/tv_weather"
+            app:layout_constraintTop_toBottomOf="@+id/tv_weather"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tv_humidity"/>
+
+        <TextView
+            android:id="@+id/tv_humidity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_30"
+            android:text="@string/label_humidity"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/txt_14"
+            android:drawableStart="@drawable/ic_humidity"
+            android:drawablePadding="@dimen/space_10"
+            app:layout_constraintStart_toStartOf="@+id/tv_weather"
+            app:layout_constraintTop_toBottomOf="@+id/tv_air_speed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"/>
+
+        <View
+            android:id="@+id/v_bottom"
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:background="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_day_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_space"
+            android:text="@string/label_day_1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/txt_12"
+            android:textAllCaps="true"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/v_bottom"
+            app:layout_constraintEnd_toStartOf="@+id/tv_day_2"
+            app:layout_constraintBottom_toTopOf="@+id/ic_day_1_weather"/>
+        
+        <ImageView
+            android:id="@+id/ic_day_1_weather"
+            android:layout_width="@dimen/weather_ic_width"
+            android:layout_height="@dimen/weather_ic_height"
+            android:layout_marginTop="@dimen/space_10"
+            app:srcCompat="@drawable/ic_partly_cloudy"
+            android:tint="@android:color/black"
+            android:contentDescription="@string/ic_weather"
+            app:layout_constraintStart_toStartOf="@+id/tv_day_1"
+            app:layout_constraintTop_toBottomOf="@+id/tv_day_1"
+            app:layout_constraintEnd_toEndOf="@+id/tv_day_1"
+            app:layout_constraintBottom_toTopOf="@+id/tv_day_1_temp"/>
+
+        <TextView
+            android:id="@+id/tv_day_1_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_10"
+            android:text="@string/label_day_1_temp"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/txt_12"
+            android:textAllCaps="true"
+            app:layout_constraintStart_toStartOf="@+id/tv_day_1"
+            app:layout_constraintTop_toBottomOf="@+id/ic_day_1_weather"
+            app:layout_constraintEnd_toEndOf="@+id/tv_day_1"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+                android:id="@+id/tv_day_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello World!"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="@string/label_day_2"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/txt_12"
+                android:textAllCaps="true"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/tv_day_1"
+                app:layout_constraintEnd_toStartOf="@+id/tv_day_3"
+                app:layout_constraintTop_toTopOf="@+id/v_bottom"
+                app:layout_constraintBottom_toTopOf="@+id/ic_day_2_weather"/>
+
+        <ImageView
+                android:id="@+id/ic_day_2_weather"
+                android:layout_width="@dimen/weather_ic_width"
+                android:layout_height="@dimen/weather_ic_height"
+                android:layout_marginTop="@dimen/space_10"
+                app:srcCompat="@drawable/ic_sun"
+                android:tint="@android:color/black"
+                android:contentDescription="@string/ic_weather"
+                app:layout_constraintStart_toStartOf="@+id/tv_day_2"
+                app:layout_constraintTop_toBottomOf="@+id/tv_day_2"
+                app:layout_constraintEnd_toEndOf="@+id/tv_day_2"
+                app:layout_constraintBottom_toTopOf="@+id/tv_day_2_temp"/>
+
+        <TextView
+                android:id="@+id/tv_day_2_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_10"
+                android:text="@string/label_day_1_temp"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/txt_12"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="@+id/tv_day_2"
+                app:layout_constraintTop_toBottomOf="@+id/ic_day_2_weather"
+                app:layout_constraintEnd_toEndOf="@+id/tv_day_2"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+                android:id="@+id/tv_day_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_day_3"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/txt_12"
+                android:textAllCaps="true"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/tv_day_2"
+                app:layout_constraintTop_toTopOf="@+id/v_bottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/ic_day_3_weather"/>
+
+        <ImageView
+                android:id="@+id/ic_day_3_weather"
+                android:layout_width="@dimen/weather_ic_width"
+                android:layout_height="@dimen/weather_ic_height"
+                android:layout_marginTop="@dimen/space_10"
+                app:srcCompat="@drawable/ic_rain"
+                android:tint="@android:color/black"
+                android:contentDescription="@string/ic_weather"
+                app:layout_constraintStart_toStartOf="@+id/tv_day_3"
+                app:layout_constraintTop_toBottomOf="@+id/tv_day_3"
+                app:layout_constraintEnd_toEndOf="@+id/tv_day_3"
+                app:layout_constraintBottom_toTopOf="@+id/tv_day_3_temp"/>
+
+        <TextView
+                android:id="@+id/tv_day_3_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_10"
+                android:text="@string/label_day_1_temp"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/txt_12"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="@+id/tv_day_3"
+                app:layout_constraintTop_toBottomOf="@+id/ic_day_3_weather"
+                app:layout_constraintEnd_toEndOf="@+id/tv_day_3"
+                app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
