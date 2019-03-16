@@ -7,7 +7,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/img_bg"
+            android:background="@drawable/img_bg_2"
             tools:context=".app.ui.main.MainActivity">
 
         <TextView
@@ -16,14 +16,32 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_space"
             android:paddingTop="@dimen/space_5"
+            android:layout_marginEnd="@dimen/space_5"
             android:text="@string/label_city"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/txt_18"
+            android:textSize="@dimen/txt_16"
             android:textStyle="bold"
             android:textAllCaps="true"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toStartOf="@id/tv_country"/>
+
+        <TextView
+                android:id="@+id/tv_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_5"
+                android:layout_marginTop="@dimen/default_space"
+                android:paddingTop="@dimen/space_5"
+                android:text="@string/label_country"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toEndOf="@+id/tv_city"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/tv_temperature"

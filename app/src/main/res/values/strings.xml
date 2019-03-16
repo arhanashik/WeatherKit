@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">WeatherKit</string>
 
-    <string name="google_api_key" translatable="true">your-api-key</string>
-    <string name="weather_api_key" translatable="true">your-weather-key</string>
+    <string name="google_api_key" translatable="true">AIzaSyDo8sV-gn5djCOq9onIzI3DiKKFK4p6cjE</string>
+    <string name="weather_api_key" translatable="true">83a1488564c223297cd5488d64f8b8cb</string>
 
     <string name="file_provider_authority" translatable="false">com.workfort.weatherkit.fileprovider</string>
     <string name="label_city">City</string>
@@ -16,4 +16,8 @@
     <string name="ic_weather">Ic Weather</string>
     <string name="label_day_2">Tuesday</string>
     <string name="label_day_3">Wednesday</string>
+    <string name="label_country">Country</string>
+    <string name="open_gps_exception">Please turn your gps on first</string>
+    <string name="service_not_available">Service not available. Please check your internet connection.</string>
+    <string name="invalid_lat_long_used">Invalid coordinates</string>
 </resources>
