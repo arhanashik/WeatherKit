@@ -12,6 +12,7 @@ them in a nice UI!
 3. Current weather info
 4. Weather forecast(Almost done. Coming soon)
 5. weather history(Almost done. Coming soon)
+6. Google platte api for extracting color from image
  
 ## Installation
 1. Clone the repo
