@@ -47,6 +47,7 @@ ext{
     multidex = '2.0.1'
 
     play_service = '16.0.1'
+    location = '16.0.0'
     tagmanager = '16.0.7'
     firebase_core = '16.0.7'
     gson = '2.8.5'

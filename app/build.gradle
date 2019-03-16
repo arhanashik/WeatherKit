@@ -14,6 +14,7 @@ android {
         targetSdkVersion target_sdk
         versionCode version_code
         versionName version_name
+        multiDexEnabled true
         vectorDrawables.useSupportLibrary true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -72,8 +73,13 @@ dependencies {
     // google sign in
     // implementation "com.google.android.gms:play-services-auth:$rootProject.play_service"
 
+    // google location
+    implementation "com.google.android.gms:play-services-location:$rootProject.location"
+    //implementation 'com.google.android.libraries.places:places:1.0.0'
+    //implementation 'com.google.android.libraries.places:places-compat:1.0.0'
+
     // gson
-    // implementation "com.google.code.gson:gson:$rootProject.gson"
+    //implementation "com.google.code.gson:gson:$rootProject.gson"
 }
 
 // 3rd party
@@ -83,14 +89,14 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$rootProject.glide"
 
     //rx java
-    // implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava"
-    // implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroid"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroid"
 
     //networking lib
-    // implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
-    // implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit"
-    // implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit"
-    // implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttp"
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit"
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttp"
 
     //logger
     implementation "com.jakewharton.timber:timber:$rootProject.timber"

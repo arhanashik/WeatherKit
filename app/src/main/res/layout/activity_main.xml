@@ -69,10 +69,10 @@
             app:layout_constraintStart_toEndOf="@+id/tv_degree"
             app:layout_constraintTop_toTopOf="@+id/tv_degree"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tv_air_speed"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_wind_speed"/>
 
         <TextView
-            android:id="@+id/tv_air_speed"
+            android:id="@+id/tv_wind_speed"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_wind_speed"
@@ -98,7 +98,7 @@
             android:drawableStart="@drawable/ic_humidity"
             android:drawablePadding="@dimen/space_10"
             app:layout_constraintStart_toStartOf="@+id/tv_weather"
-            app:layout_constraintTop_toBottomOf="@+id/tv_air_speed"
+            app:layout_constraintTop_toBottomOf="@+id/tv_wind_speed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"/>
 

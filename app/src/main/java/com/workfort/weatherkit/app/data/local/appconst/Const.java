@@ -12,13 +12,15 @@ package com.workfort.weatherkit.app.data.local.appconst;
 
 public interface Const {
     interface RequestCode {
+        int LOCATION = 1010;
     }
 
     interface Key {
     }
 
-    // Prefix
-    String PREFIX_IMAGE = "IMG_";
-    // Postfix
-    String SUFFIX_IMAGE = ".jpg";
+    interface RemoteConfig {
+        String BASE_URL = "https://api.openweathermap.org/data/2.5/";
+        String ACCESS_TOKEN = "your-access-token-here";
+        String CONTENT_TYPE = "application/x-www-form-urlencoded";
+    }
 }
