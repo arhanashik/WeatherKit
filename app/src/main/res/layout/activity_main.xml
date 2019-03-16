@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_space"
+            android:paddingTop="@dimen/space_5"
             android:text="@string/label_city"
             android:textColor="@android:color/white"
             android:textSize="@dimen/txt_18"
@@ -22,7 +23,7 @@
             android:textAllCaps="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/tv_temperature"
@@ -62,6 +63,7 @@
             android:text="@string/label_weather"
             android:textColor="@android:color/white"
             android:textSize="@dimen/txt_14"
+            android:gravity="center_vertical"
             android:drawableStart="@drawable/ic_partly_cloudy"
             android:drawablePadding="@dimen/space_10"
             app:layout_constraintStart_toEndOf="@+id/tv_degree"
@@ -76,6 +78,7 @@
             android:text="@string/label_wind_speed"
             android:textColor="@android:color/white"
             android:textSize="@dimen/txt_14"
+            android:gravity="center_vertical"
             android:drawableStart="@drawable/ic_wind_speed"
             android:drawablePadding="@dimen/space_10"
             app:layout_constraintStart_toStartOf="@+id/tv_weather"
@@ -91,6 +94,7 @@
             android:text="@string/label_humidity"
             android:textColor="@android:color/white"
             android:textSize="@dimen/txt_14"
+            android:gravity="center_vertical"
             android:drawableStart="@drawable/ic_humidity"
             android:drawablePadding="@dimen/space_10"
             app:layout_constraintStart_toStartOf="@+id/tv_weather"
@@ -101,7 +105,7 @@
         <View
             android:id="@+id/v_bottom"
             android:layout_width="0dp"
-            android:layout_height="160dp"
+            android:layout_height="140dp"
             android:background="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

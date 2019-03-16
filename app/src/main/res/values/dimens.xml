@@ -2,8 +2,8 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="weather_ic_width">48dp</dimen>
-    <dimen name="weather_ic_height">48dp</dimen>
+    <dimen name="weather_ic_width">36dp</dimen>
+    <dimen name="weather_ic_height">36dp</dimen>
 
     <dimen name="default_space">16dp</dimen>
     <dimen name="space_5">5dp</dimen>
