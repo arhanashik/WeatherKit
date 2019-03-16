@@ -4,10 +4,12 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion target_sdk
     defaultConfig {
-        applicationId "com.workfort.demo"
+        applicationId "com.workfort.weatherkit"
         minSdkVersion min_sdk
         targetSdkVersion target_sdk
         versionCode version_code
@@ -40,7 +42,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:$rootProject.support"
 
     // LiveData + ViewModel
-    // implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycle"
 
     // card view and recycler view
     // implementation "androidx.cardview:cardview:$rootProject.support"
@@ -53,7 +55,7 @@ dependencies {
     // implementation "androidx.exifinterface:exifinterface:$rootProject.exifinterface"
 
     //palette
-    // implementation "androidx.palette:palette:$rootProject.support"
+    implementation "androidx.palette:palette:$rootProject.support"
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -70,37 +72,15 @@ dependencies {
     // google sign in
     // implementation "com.google.android.gms:play-services-auth:$rootProject.play_service"
 
-    // google tag manager
-    // implementation "com.google.android.gms:play-services-tagmanager:$rootProject.tagmanager"
-
-    // firebase core + analytics
-    // implementation "com.google.firebase:firebase-core:$rootProject.firebase_core"
-
     // gson
     // implementation "com.google.code.gson:gson:$rootProject.gson"
 }
 
-// facebook
-dependencies {
-    // implementation "com.facebook.android:facebook-login:$rootProject.facebook_login"
-}
-
-// module
-dependencies {
-
-}
-
 // 3rd party
 dependencies {
-    // circle image
-    // implementation "com.mikhaellopez:circularimageview:$rootProject.circularimageview"
-
     //image loader
-    // implementation "com.github.bumptech.glide:glide:$rootProject.glide"
-    // kapt "com.github.bumptech.glide:compiler:$rootProject.glide"
-
-    //image cropper
-    // implementation "com.github.yalantis:ucrop:$rootProject.ucrop"
+    implementation "com.github.bumptech.glide:glide:$rootProject.glide"
+    kapt "com.github.bumptech.glide:compiler:$rootProject.glide"
 
     //rx java
     // implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava"
