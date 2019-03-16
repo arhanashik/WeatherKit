@@ -10,7 +10,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.workfort.weatherkit.R
 import com.workfort.weatherkit.app.data.local.appconst.Const
-import com.workfort.weatherkit.app.data.remote.WeatherResponse
+import com.workfort.weatherkit.app.data.remote.CurrentWeatherResponse
 import com.workfort.weatherkit.util.helper.CalculationUtil
 import com.workfort.weatherkit.util.helper.PermissionUtil
 import com.workfort.weatherkit.util.helper.Toaster
@@ -62,29 +62,14 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 // Got last known location. In some rare situations this can be null.
-                val geocoder = Geocoder(this, Locale.getDefault())
-                val addresses = geocoder.getFromLocation(
+                val geo = Geocoder(this, Locale.getDefault())
+                val addresses = geo.getFromLocation(
                     location?.latitude!!, location.longitude, 1
                 )
 
                 tv_city.text = addresses[0].locality
 
-                val params = HashMap<String, Any>()
-                params["lat"] =  location.latitude
-                params["lon"] =  location.longitude
-                params["APPID"] = getString(R.string.weather_api_key)
-                disposable.add(apiService.getCurrentWeather(params)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        {
-                            setWeatherData(it)
-                        },{
-                            Toaster(this).showToast(it.message!!)
-                            Timber.e(it)
-                        }
-                    )
-                )
+                getCurrentWeather(location.latitude, location.longitude)
             }
     }
 
@@ -114,7 +99,26 @@ class MainActivity : AppCompatActivity() {
 //        }
 //    }
 
-    private fun setWeatherData(weather: WeatherResponse) {
+    private fun getCurrentWeather(lat: Double, lng: Double) {
+        val params = HashMap<String, Any>()
+        params["lat"] =  lat
+        params["lon"] =  lng
+        params["appid"] = getString(R.string.weather_api_key)
+        disposable.add(apiService.getCurrentWeather(params)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    setCurrentWeatherData(it)
+                },{
+                    Toaster(this).showToast(it.message!!)
+                    Timber.e(it)
+                }
+            )
+        )
+    }
+
+    private fun setCurrentWeatherData(weather: CurrentWeatherResponse) {
         val calc = CalculationUtil()
 
         val temp = calc.toCelsius(weather.main.temp).toInt()
