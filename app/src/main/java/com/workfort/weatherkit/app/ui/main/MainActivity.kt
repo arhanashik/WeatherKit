@@ -6,18 +6,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.workfort.weatherkit.R
 import com.workfort.weatherkit.app.data.local.appconst.Const
 import com.workfort.weatherkit.app.data.remote.CurrentWeatherResponse
-import com.workfort.weatherkit.app.data.remote.Forecast
 import com.workfort.weatherkit.app.data.remote.WeatherForecastResponse
 import com.workfort.weatherkit.util.helper.CalculationUtil
 import com.workfort.weatherkit.util.helper.PermissionUtil
@@ -29,13 +29,11 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.io.IOException
-import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    //private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val disposable: CompositeDisposable = CompositeDisposable()
 
@@ -45,16 +43,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Places.initialize(applicationContext, getString(R.string.api_key))
+        Places.initialize(applicationContext, getString(R.string.google_api_key))
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val permissionUtil = PermissionUtil.on()
-        if(permissionUtil.isAllowed(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            getLocation()
+        if(permissionUtil.isAllowed(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            getPlaceInfo()
         }else {
             permissionUtil.request(
-                this, Const.RequestCode.LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+                this, Const.RequestCode.LOCATION, Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
 
@@ -70,73 +68,78 @@ class MainActivity : AppCompatActivity() {
 
         if(requestCode == Const.RequestCode.LOCATION) {
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocation()
+                getPlaceInfo()
             }
         }
     }
 
-    private fun getLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                if(location == null) {
-                    Toaster(this).showToast(R.string.open_gps_exception)
-                    return@addOnSuccessListener
-                }
+//    private fun getLocation() {
+//        fusedLocationClient.lastLocation
+//            .addOnSuccessListener { location : Location? ->
+//                if(location == null) {
+//                    Toaster(this).showToast(R.string.open_gps_exception)
+//                    return@addOnSuccessListener
+//                }
+//
+//                setCurrentLocationInfo(location.latitude, location.longitude)
+//                getCurrentWeatherData(location.latitude, location.longitude)
+//                get5DayForecastData(location.latitude, location.longitude)
+//            }
+//    }
 
+    private fun getPlaceInfo() {
+        val placesClient = Places.createClient(this)
+        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.PHOTO_METADATAS)
+        val placeRequest = FindCurrentPlaceRequest.builder(fields).build()
+
+        val placeResponse = placesClient.findCurrentPlace(placeRequest)
+        placeResponse.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val response = task.result
+                for (placeLikelihood in response?.placeLikelihoods!!) {
+                    Timber.e(String.format(
+                        "Place '%s' has likelihood: %f",
+                        placeLikelihood.place.name,
+                        placeLikelihood.likelihood
+                    ))
+                }
+                val location = response.placeLikelihoods[0].place.latLng
+
+                setCurrentLocationInfo(location?.latitude!!, location.longitude)
                 getCurrentWeatherData(location.latitude, location.longitude)
                 get5DayForecastData(location.latitude, location.longitude)
-
-                val geo = Geocoder(this, Locale.getDefault())
-                Thread(Runnable {
-                    var addresses: List<Address> = emptyList()
-                    try {
-                        addresses = geo.getFromLocation(
-                            location.latitude, location.longitude, 1
-                        )
-                    } catch (ioException: IOException) {
-                        Timber.e(ioException)
-                        Toaster(this).showToast(R.string.service_not_available)
-                    } catch (illegalArgumentException: IllegalArgumentException) {
-                        Timber.e(illegalArgumentException)
-                        Toaster(this).showToast(R.string.invalid_lat_long_used)
-
-                    }
-
-                    if(!addresses.isNullOrEmpty()) {
-                        runOnUiThread {
-                            tv_city.text = addresses[0].locality
-                            tv_country.text = addresses[0].countryName
-                        }
-                    }
-                }).start()
+            } else {
+                val exception = task.exception
+                if (exception is ApiException) {
+                    Timber.e("Place not found: ${exception.statusCode}")
+                }
             }
+        }
     }
 
-//    private fun getPlaceInfo() {
-//        val placesClient = Places.createClient(this)
-//        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.PHOTO_METADATAS)
-//        val placeRequest = FindCurrentPlaceRequest.builder(fields).build()
-//
-//        val placeResponse = placesClient.findCurrentPlace(placeRequest)
-//        placeResponse.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                val response = task.result
-//                for (placeLikelihood in response?.placeLikelihoods!!) {
-//                    Timber.e(String.format(
-//                        "Place '%s' has likelihood: %f",
-//                        placeLikelihood.place.name,
-//                        placeLikelihood.likelihood
-//                    )
-//                    )
-//                }
-//            } else {
-//                val exception = task.exception
-//                if (exception is ApiException) {
-//                    Timber.e("Place not found: ${exception.statusCode}")
-//                }
-//            }
-//        }
-//    }
+    private fun setCurrentLocationInfo(lat: Double, lng: Double) {
+        val geo = Geocoder(this, Locale.getDefault())
+        Thread(Runnable {
+            var addresses: List<Address> = emptyList()
+            try {
+                addresses = geo.getFromLocation(lat, lng, 1)
+            } catch (ioException: IOException) {
+                Timber.e(ioException)
+                Toaster(this).showToast(R.string.service_not_available)
+            } catch (illegalArgumentException: IllegalArgumentException) {
+                Timber.e(illegalArgumentException)
+                Toaster(this).showToast(R.string.invalid_lat_long_used)
+
+            }
+
+            if(!addresses.isNullOrEmpty()) {
+                runOnUiThread {
+                    tv_city.text = addresses[0].locality
+                    tv_country.text = addresses[0].countryName
+                }
+            }
+        }).start()
+    }
 
     private fun getCurrentWeatherData(lat: Double, lng: Double) {
         val params = HashMap<String, Any>()
