@@ -8,6 +8,8 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.text.format.DateFormat
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
@@ -89,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getPlaceInfo() {
         val placesClient = Places.createClient(this)
-        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.PHOTO_METADATAS)
+        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS)
         val placeRequest = FindCurrentPlaceRequest.builder(fields).build()
 
         val placeResponse = placesClient.findCurrentPlace(placeRequest)
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val exception = task.exception
                 if (exception is ApiException) {
-                    Timber.e("Place not found: ${exception.statusCode}")
+                    Timber.e("Place not found: ${exception.message}")
                 }
             }
         }
@@ -129,7 +131,6 @@ class MainActivity : AppCompatActivity() {
             } catch (illegalArgumentException: IllegalArgumentException) {
                 Timber.e(illegalArgumentException)
                 Toaster(this).showToast(R.string.invalid_lat_long_used)
-
             }
 
             if(!addresses.isNullOrEmpty()) {
@@ -173,6 +174,21 @@ class MainActivity : AppCompatActivity() {
 
         val humidity = "${weather.main.humidity}%"
         tv_humidity.text = humidity
+
+        val cal1 = Calendar.getInstance()
+        cal1.timeInMillis = weather.common.sunrise
+        val sunrise = DateFormat.format("hh:mm a", cal1.time)
+        tv_sunrise.text = sunrise
+
+        val cal2 = Calendar.getInstance()
+        cal2.timeInMillis = weather.common.sunset
+        val sunset = DateFormat.format("hh:mm a", cal2.time)
+        tv_sunset.text = sunset
+
+        if(sunrise != sunset) {
+            tv_sunrise.visibility = View.VISIBLE
+            tv_sunset.visibility = View.VISIBLE
+        }
     }
 
     private fun get5DayForecastData(lat: Double, lng: Double) {
