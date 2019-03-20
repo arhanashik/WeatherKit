@@ -19,8 +19,11 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.workfort.weatherkit.R
 import com.workfort.weatherkit.app.data.local.appconst.Const
+import com.workfort.weatherkit.app.data.local.pref.PrefProp
+import com.workfort.weatherkit.app.data.local.pref.PrefUtil
 import com.workfort.weatherkit.app.data.remote.CurrentWeatherResponse
 import com.workfort.weatherkit.app.data.remote.WeatherForecastResponse
+import com.workfort.weatherkit.util.helper.AndroidUtil
 import com.workfort.weatherkit.util.helper.CalculationUtil
 import com.workfort.weatherkit.util.helper.PermissionUtil
 import com.workfort.weatherkit.util.helper.Toaster
@@ -107,7 +110,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 val location = response.placeLikelihoods[0].place.latLng
 
-                setCurrentLocationInfo(location?.latitude!!, location.longitude)
+                PrefUtil.set(PrefProp.LAT, location?.latitude!!.toFloat())
+                PrefUtil.set(PrefProp.LNG, location.longitude.toFloat())
+
+                setCurrentLocationInfo(location.latitude, location.longitude)
                 getCurrentWeatherData(location.latitude, location.longitude)
                 get5DayForecastData(location.latitude, location.longitude)
             } else {
@@ -115,6 +121,10 @@ class MainActivity : AppCompatActivity() {
                 if (exception is ApiException) {
                     Timber.e("Place not found: ${exception.message}")
                 }
+                val lat = PrefUtil.get(PrefProp.LAT, 0f)
+                val lng = PrefUtil.get(PrefProp.LNG, 0f)
+                setCurrentLocationInfo(lat?.toDouble()!!, lng?.toDouble()!!)
+                getCurrentWeatherData(lat.toDouble(), lng.toDouble())
             }
         }
     }
@@ -146,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         val params = HashMap<String, Any>()
         params["lat"] =  lat
         params["lon"] =  lng
-        params["appid"] = getString(R.string.weather_api_key)
+        params["APPID"] = getString(R.string.weather_api_key)
         disposable.add(apiService.getCurrentWeather(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -167,7 +177,9 @@ class MainActivity : AppCompatActivity() {
         val temp = calc.toCelsius(weather.main.temp).toInt()
         tv_temperature.text = temp.toString()
 
+        val icon = getWeatherIcon(weather.weather[0].main.toLowerCase())
         tv_weather.text = weather.weather[0].main
+        tv_weather.setCompoundDrawablesWithIntrinsicBounds(icon,  0, 0, 0)
 
         val windSpeed = "${weather.wind.speed} mps"
         tv_wind_speed.text = windSpeed
@@ -218,12 +230,22 @@ class MainActivity : AppCompatActivity() {
             cal.timeInMillis = it.date
 
             val dayNum = cal.get(Calendar.DAY_OF_WEEK)
-            if(dayNum != sameDay) {
-                sameDay = dayNum
-                Timber.e("day $dayNum")
-            }else {
-                Timber.e("${it.date}")
-            }
+//            if(dayNum != sameDay) {
+//                sameDay = dayNum
+//                Timber.e("day $dayNum")
+//            }else {
+//                Timber.e("${it.date} : ${DateFormat.format("dd-MMM hh:mm a", it.date)}")
+//            }
+            Timber.e("${it.date} : ${DateFormat.format("dd-MMM hh:mm a", it.date)}")
+        }
+    }
+
+    private fun getWeatherIcon(weather: String): Int {
+        return when(weather.toLowerCase()) {
+            "clear" -> R.drawable.ic_sun
+            "rain" -> R.drawable.ic_rain
+            "cloud", "clouds", "haze" -> R.drawable.ic_cloud
+            else -> R.drawable.ic_partly_cloudy
         }
     }
 

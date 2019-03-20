@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">WeatherKit</string>
 
-    <string name="google_api_key" translatable="true">your-api-key</string>
-    <string name="weather_api_key" translatable="true">your-api-key</string>
+    <string name="google_api_key" translatable="true">AIzaSyBarP0K6BS71NJug-nHpUH4PH3tjJAlExs</string>
+    <string name="weather_api_key" translatable="true">e968d89ad34294bc47b5585a8c69330f</string>
 
     <string name="file_provider_authority" translatable="false">com.workfort.weatherkit.fileprovider</string>
     <string name="label_city">City</string>
