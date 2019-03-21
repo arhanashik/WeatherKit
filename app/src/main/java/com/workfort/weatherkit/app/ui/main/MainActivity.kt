@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         createPaletteAsync(
             BitmapFactory.decodeResource(
-                resources, R.drawable.img_bg_2
+                resources, R.drawable.img_bg
             )
         )
     }
