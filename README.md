@@ -8,7 +8,7 @@ them in a nice UI!
 
 ## Features
 1. User's current location
-2. User's current city, city image(Coming soon), country name
+2. User's current city, city image, country name
 3. Current weather info
 4. Weather forecast(Almost done. Coming soon)
 5. weather history(Almost done. Coming soon)
