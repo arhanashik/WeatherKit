@@ -16,9 +16,11 @@ import androidx.palette.graphics.Palette
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPhotoRequest
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.workfort.weatherkit.R
-import com.workfort.weatherkit.app.data.local.appconst.Const
+import com.workfort.weatherkit.app.data.local.appconst.Constant
 import com.workfort.weatherkit.app.data.local.pref.PrefProp
 import com.workfort.weatherkit.app.data.local.pref.PrefUtil
 import com.workfort.weatherkit.app.data.remote.CurrentWeatherResponse
@@ -27,13 +29,15 @@ import com.workfort.weatherkit.util.helper.AndroidUtil
 import com.workfort.weatherkit.util.helper.CalculationUtil
 import com.workfort.weatherkit.util.helper.PermissionUtil
 import com.workfort.weatherkit.util.helper.Toaster
-import com.workfort.weatherkit.util.lib.remote.ApiService
+import com.workfort.weatherkit.util.lib.remote.PlaceApiService
+import com.workfort.weatherkit.util.lib.remote.WeatherApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.io.IOException
+import java.lang.StringBuilder
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +46,8 @@ class MainActivity : AppCompatActivity() {
 
     private val disposable: CompositeDisposable = CompositeDisposable()
 
-    private val apiService by lazy { ApiService.create() }
+    private val placeApiService by lazy { PlaceApiService.create() }
+    private val weatherApiService by lazy { WeatherApiService.create() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             getPlaceInfo()
         }else {
             permissionUtil.request(
-                this, Const.RequestCode.LOCATION, Manifest.permission.ACCESS_FINE_LOCATION
+                this, Constant.RequestCode.LOCATION, Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
 
@@ -71,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(requestCode == Const.RequestCode.LOCATION) {
+        if(requestCode == Constant.RequestCode.LOCATION) {
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getPlaceInfo()
             }
@@ -97,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS)
         val placeRequest = FindCurrentPlaceRequest.builder(fields).build()
 
+        FetchPlaceRequest.builder("", fields).build()
         val placeResponse = placesClient.findCurrentPlace(placeRequest)
         placeResponse.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -110,8 +116,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 val location = response.placeLikelihoods[0].place.latLng
 
-                PrefUtil.set(PrefProp.LAT, location?.latitude!!.toFloat())
-                PrefUtil.set(PrefProp.LNG, location.longitude.toFloat())
+                PrefUtil.set(PrefProp.LAT, location?.latitude!!.toString())
+                PrefUtil.set(PrefProp.LNG, location.longitude.toString())
 
                 setCurrentLocationInfo(location.latitude, location.longitude)
                 getCurrentWeatherData(location.latitude, location.longitude)
@@ -121,9 +127,9 @@ class MainActivity : AppCompatActivity() {
                 if (exception is ApiException) {
                     Timber.e("Place not found: ${exception.message}")
                 }
-                val lat = PrefUtil.get(PrefProp.LAT, 0f)
-                val lng = PrefUtil.get(PrefProp.LNG, 0f)
-                setCurrentLocationInfo(lat?.toDouble()!!, lng?.toDouble()!!)
+                val lat = PrefUtil.get(PrefProp.LAT, "0")?.toDouble()
+                val lng = PrefUtil.get(PrefProp.LNG, "0")?.toDouble()
+                setCurrentLocationInfo(lat!!, lng!!)
                 getCurrentWeatherData(lat.toDouble(), lng.toDouble())
             }
         }
@@ -137,19 +143,75 @@ class MainActivity : AppCompatActivity() {
                 addresses = geo.getFromLocation(lat, lng, 1)
             } catch (ioException: IOException) {
                 Timber.e(ioException)
-                Toaster(this).showToast(R.string.service_not_available)
+                runOnUiThread { Toaster(this).showToast(R.string.service_not_available) }
             } catch (illegalArgumentException: IllegalArgumentException) {
                 Timber.e(illegalArgumentException)
-                Toaster(this).showToast(R.string.invalid_lat_long_used)
+                runOnUiThread { Toaster(this).showToast(R.string.invalid_lat_long_used) }
             }
 
             if(!addresses.isNullOrEmpty()) {
                 runOnUiThread {
                     tv_city.text = addresses[0].locality
                     tv_country.text = addresses[0].countryName
+                    getCityInfo(addresses[0].locality)
                 }
             }
         }).start()
+    }
+
+    private fun getCityInfo(city: String) {
+
+        val params = HashMap<String, Any>()
+        params["input"] = city
+        params["inputtype"] = "textquery"
+        params["fields"] = "place_id,name"
+        params["key"] = getString(R.string.google_web_api_key)
+
+        disposable.add(placeApiService.findPlace(params)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { placeResponse ->
+                    if(placeResponse.status == "OK") {
+                        if(!placeResponse.candidates.isNullOrEmpty()) {
+                            getPlacePhoto(placeResponse.candidates[0].placeId)
+                        }
+                    }
+                }, { exception ->
+                    Timber.e(exception)
+                }
+            )
+        )
+    }
+
+    private fun getPlacePhoto(placeId: String) {
+        val fields = Arrays.asList(Place.Field.PHOTO_METADATAS)
+        val placeRequest = FetchPlaceRequest.builder(placeId, fields).build()
+
+        val placeClient = Places.createClient(this)
+        placeClient.fetchPlace(placeRequest).addOnSuccessListener { placeResponse ->
+            val photoMetadata = placeResponse.place.photoMetadatas?.get(0) ?: return@addOnSuccessListener
+
+            val attributions = photoMetadata.attributions
+            Timber.e("attributions: $attributions")
+
+            val displayParams = AndroidUtil().getDisplayParams(this)
+            val photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                .setMaxWidth(displayParams.width)
+                .setMaxHeight(displayParams.height)
+                .build()
+
+            placeClient.fetchPhoto(photoRequest).addOnSuccessListener { photoResponse ->
+                val bitmap = photoResponse.bitmap
+                img_bg.setImageBitmap(bitmap)
+                createPaletteAsync(bitmap)
+            }.addOnFailureListener { exception ->
+                if (exception is ApiException) {
+                    val statusCode = exception.statusCode
+                    Timber.e("Place not found: ${exception.message}")
+                }
+            }
+        }
     }
 
     private fun getCurrentWeatherData(lat: Double, lng: Double) {
@@ -157,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         params["lat"] =  lat
         params["lon"] =  lng
         params["APPID"] = getString(R.string.weather_api_key)
-        disposable.add(apiService.getCurrentWeather(params)
+        disposable.add(weatherApiService.getCurrentWeather(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -189,12 +251,12 @@ class MainActivity : AppCompatActivity() {
 
         val cal1 = Calendar.getInstance()
         cal1.timeInMillis = weather.common.sunrise
-        val sunrise = DateFormat.format("hh:mm a", cal1.time)
+        val sunrise = DateFormat.format("HH:mm", cal1.time)
         tv_sunrise.text = sunrise
 
         val cal2 = Calendar.getInstance()
         cal2.timeInMillis = weather.common.sunset
-        val sunset = DateFormat.format("hh:mm a", cal2.time)
+        val sunset = DateFormat.format("HH:mm", cal2.time)
         tv_sunset.text = sunset
 
         if(sunrise != sunset) {
@@ -208,7 +270,7 @@ class MainActivity : AppCompatActivity() {
         params["lat"] =  lat
         params["lon"] =  lng
         params["appid"] = getString(R.string.weather_api_key)
-        disposable.add(apiService.get5DayWeather(params)
+        disposable.add(weatherApiService.get5DayWeather(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -252,7 +314,7 @@ class MainActivity : AppCompatActivity() {
     private fun createPaletteAsync(bitmap: Bitmap) {
         Palette.from(bitmap).generate { palette ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.statusBarColor = palette?.getDarkVibrantColor(
+                window.statusBarColor = palette?.getDominantColor(
                     ContextCompat.getColor(this, R.color.colorPrimaryDark)
                 )!!
             }

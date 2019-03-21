@@ -1,6 +1,6 @@
 package com.workfort.weatherkit.util.lib.remote
 
-import com.workfort.weatherkit.app.data.local.appconst.Const
+import com.workfort.weatherkit.app.data.local.appconst.Constant
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -10,10 +10,10 @@ class HeaderInterceptor : Interceptor {
             request()
                 .newBuilder()
                 .addHeader("x-access-token",
-                    Const.RemoteConfig.ACCESS_TOKEN
+                    Constant.RemoteConfig.ACCESS_TOKEN
                 )
                 .addHeader("Content-Type",
-                    Const.RemoteConfig.CONTENT_TYPE
+                    Constant.RemoteConfig.CONTENT_TYPE
                 )
                 .build()
         )

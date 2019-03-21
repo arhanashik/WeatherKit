@@ -7,8 +7,20 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/img_bg_2"
+            android:background="@android:color/black"
             tools:context=".app.ui.main.MainActivity">
+
+        <ImageView
+            android:id="@+id/img_bg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/img_bg_2"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/description_city_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/tv_city"
@@ -147,7 +159,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/txt_14"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_sunrise"
+                android:drawableStart="@drawable/ic_sunset"
                 android:drawablePadding="@dimen/space_10"
                 android:visibility="invisible"
                 app:layout_constraintStart_toEndOf="@+id/tv_sunrise"

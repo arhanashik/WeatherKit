@@ -2,6 +2,7 @@
     <string name="app_name">WeatherKit</string>
 
     <string name="google_api_key" translatable="true">AIzaSyBarP0K6BS71NJug-nHpUH4PH3tjJAlExs</string>
+    <string name="google_web_api_key" translatable="true">AIzaSyChJXVIFrWS7llfvSVAxCOsFpcrDmPisuM</string>
     <string name="weather_api_key" translatable="true">e968d89ad34294bc47b5585a8c69330f</string>
 
     <string name="file_provider_authority" translatable="false">com.workfort.weatherkit.fileprovider</string>
@@ -21,4 +22,5 @@
     <string name="service_not_available">Service not available. Please check your internet connection.</string>
     <string name="invalid_lat_long_used">Invalid coordinates</string>
     <string name="label_sunrise">Sun rise</string>
+    <string name="description_city_image">City image</string>
 </resources>

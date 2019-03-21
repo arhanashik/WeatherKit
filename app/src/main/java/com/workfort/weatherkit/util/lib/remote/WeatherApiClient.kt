@@ -6,7 +6,7 @@ import io.reactivex.Flowable
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
-interface ApiClient {
+interface WeatherApiClient {
     @GET("weather")
     fun getCurrentWeather(
         @QueryMap params: HashMap<String, Any>
