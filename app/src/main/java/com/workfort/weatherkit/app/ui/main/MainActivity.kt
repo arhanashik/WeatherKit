@@ -10,9 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -25,10 +28,8 @@ import com.workfort.weatherkit.app.data.local.pref.PrefProp
 import com.workfort.weatherkit.app.data.local.pref.PrefUtil
 import com.workfort.weatherkit.app.data.remote.CurrentWeatherResponse
 import com.workfort.weatherkit.app.data.remote.WeatherForecastResponse
-import com.workfort.weatherkit.util.helper.AndroidUtil
-import com.workfort.weatherkit.util.helper.CalculationUtil
-import com.workfort.weatherkit.util.helper.PermissionUtil
-import com.workfort.weatherkit.util.helper.Toaster
+import com.workfort.weatherkit.app.ui.main.adapter.ForecastAdapter
+import com.workfort.weatherkit.util.helper.*
 import com.workfort.weatherkit.util.lib.remote.PlaceApiService
 import com.workfort.weatherkit.util.lib.remote.WeatherApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -39,6 +40,8 @@ import timber.log.Timber
 import java.io.IOException
 import java.lang.StringBuilder
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.ln
 
 class MainActivity : AppCompatActivity() {
 
@@ -109,9 +112,7 @@ class MainActivity : AppCompatActivity() {
                 val response = task.result
                 for (placeLikelihood in response?.placeLikelihoods!!) {
                     Timber.e(String.format(
-                        "Place '%s' has likelihood: %f",
-                        placeLikelihood.place.name,
-                        placeLikelihood.likelihood
+                        "Place '%s' has likelihood: %f", placeLikelihood.place.name, placeLikelihood.likelihood
                     ))
                 }
                 val location = response.placeLikelihoods[0].place.latLng
@@ -131,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                 val lng = PrefUtil.get(PrefProp.LNG, "0")?.toDouble()
                 setCurrentLocationInfo(lat!!, lng!!)
                 getCurrentWeatherData(lat.toDouble(), lng.toDouble())
+                get5DayForecastData(lat.toDouble(), lng.toDouble())
             }
         }
     }
@@ -218,7 +220,7 @@ class MainActivity : AppCompatActivity() {
         val params = HashMap<String, Any>()
         params["lat"] =  lat
         params["lon"] =  lng
-        params["APPID"] = getString(R.string.weather_api_key)
+        params["appid"] = getString(R.string.weather_api_key)
         disposable.add(weatherApiService.getCurrentWeather(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -239,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         val temp = calc.toCelsius(weather.main.temp).toInt()
         tv_temperature.text = temp.toString()
 
-        val icon = getWeatherIcon(weather.weather[0].main.toLowerCase())
+        val icon = WeatherKitUtil().getWeatherIcon(weather.weather[0].main.toLowerCase())
         tv_weather.text = weather.weather[0].main
         tv_weather.setCompoundDrawablesWithIntrinsicBounds(icon,  0, 0, 0)
 
@@ -266,49 +268,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun get5DayForecastData(lat: Double, lng: Double) {
+        val adapter = ForecastAdapter()
+        rv_forecast.setHasFixedSize(true)
+        rv_forecast.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        rv_forecast.adapter = adapter
+
         val params = HashMap<String, Any>()
         params["lat"] =  lat
         params["lon"] =  lng
         params["appid"] = getString(R.string.weather_api_key)
+        Timber.e("$lat : $lng")
         disposable.add(weatherApiService.get5DayWeather(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    set5DayForecastData(it)
+                    pb.visibility = View.INVISIBLE
+                    if(!it.list.isNullOrEmpty()) {
+                        rv_forecast.visibility = View.VISIBLE
+                        adapter.setForecastList(it.list)
+                    }else {
+                        tv_no_forecast.visibility = View.VISIBLE
+                    }
                 },{
+                    pb.visibility = View.INVISIBLE
+                    tv_no_forecast.visibility = View.VISIBLE
                     Toaster(this).showToast(it.message!!)
                     Timber.e(it)
                 }
             )
         )
-    }
-
-    private fun set5DayForecastData(forecast: WeatherForecastResponse) {
-        var sameDay = -1
-        for (i in 0..(forecast.list.size - 1)) {
-            val it = forecast.list[i]
-            val cal = Calendar.getInstance()
-            cal.timeInMillis = it.date
-
-            val dayNum = cal.get(Calendar.DAY_OF_WEEK)
-//            if(dayNum != sameDay) {
-//                sameDay = dayNum
-//                Timber.e("day $dayNum")
-//            }else {
-//                Timber.e("${it.date} : ${DateFormat.format("dd-MMM hh:mm a", it.date)}")
-//            }
-            Timber.e("${it.date} : ${DateFormat.format("dd-MMM hh:mm a", it.date)}")
-        }
-    }
-
-    private fun getWeatherIcon(weather: String): Int {
-        return when(weather.toLowerCase()) {
-            "clear" -> R.drawable.ic_sun
-            "rain" -> R.drawable.ic_rain
-            "cloud", "clouds", "haze" -> R.drawable.ic_cloud
-            else -> R.drawable.ic_partly_cloudy
-        }
     }
 
     private fun createPaletteAsync(bitmap: Bitmap) {
